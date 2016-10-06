@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Histórico bancário</title>
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+  <link rel="stylesheet" href="./lib/material-design-lite/material.min.css">
+
+  <link rel="stylesheet" href="./css/style.css">
+
+  <script src="./lib/material-design-lite/material.min.js"></script>
+  <script src="./lib//angular/angular.min.js"></script>
+  <script src="./lib/angular-i18n/angular-locale_pt-br.js"></script>
+
+  <script src="./js/app.js"></script>
+
+  <script src="./js/services/date.service.js"></script>
+
+  <script src="./js/directives/mdlDialog.directive.js"></script>
+
+  <script src="./js/controllers/historic.ctrl.js"></script>
+</head>
+<body ng-app="app">
+  <section ng-controller="historicCtrl as ctrl" class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+
+    <header class="mdl-layout__header">
+      <div class="mdl-layout__header-row">
+        <span class="mdl-layout-title">Histórico Bancario</span>
+      </div>
+    </header>
+
+    <dialog class="mdl-dialog" mdl-dialog>
+      <h4 class="mdl-dialog__title">{{ ctrl.mdlDialog.title }}</h4>
+      <div class="mdl-dialog__content">{{ ctrl.mdlDialog.content }}</div>
+      <div class="mdl-dialog__actions">
+        <button type="button" class="mdl-button close" ng-click="ctrl.mdlDialog.close()">OK</button>
+      </div>
+    </dialog>
+    
+    <main class="mdl-layout__content">
+      <div class="page-content">
+        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp table-width-100per">
+          <thead>
+            <tr>
+              <th ng-class="{{ctrl.header.date.ascDescCLassArrow}}" ng-click="ctrl.tableHeaderSortedArrow(ctrl.header.date);">
+                Data
+              </th>
+
+              <th>
+                Tipo
+              </th>
+
+              <th>
+                Valor
+              </th>
+
+              <th>
+                <button id="btnNew"
+                class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect mdl-button--primary"
+                ng-click="ctrl.newHistoric()">
+                <i class="material-icons">add</i>
+              </button>
+              <div class="mdl-tooltip mdl-tooltip--large" for="btnNew">
+                Novo
+              </div>
+            </th>
+          </tr>
+
+          <tr ng-if="ctrl.new">
+
+            <td></td>
+
+            <td>
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <select class="mdl-textfield__input" ng-model="ctrl.new.type" ng-options="key as label for (key, label) in ctrl.mappingType"></select>
+              </div>
+            </td>
+
+            <td>
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <input class="mdl-textfield__input"
+                type="number"
+                ng-required="true"
+                ng-model="ctrl.new.value">
+              </div>
+
+            </td>
+
+            <td>
+              <button id="btnInsert"
+              class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect mdl-button--primary"
+              ng-click="ctrl.setHistoric(ctrl.new) ? ctrl.cleanNew() : null;">
+
+              <i class="material-icons">check</i>
+            </button>
+            <div class="mdl-tooltip mdl-tooltip--large" for="btnInsert">
+              Inserir
+            </div>
+
+          </td>
+        </tr>
+
+      </thead>
+
+      <tbody>
+        <tr ng-repeat="historic in ctrl.historics track by $index">
+          <td>
+            {{ historic.date  | date : 'dd/MM/yyyy HH:mm'}}
+          </td>
+
+          <td>
+            {{ ctrl.getType(historic.type) }}
+          </td>
+
+          <td>
+            {{ historic.value | currency : $ : 2}}
+          </td>
+
+          <td>
+            <button id="btnRemove{{$index}}"
+            class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect mdl-button--accent"
+            ng-click="ctrl.removeHistoric($index)">
+
+            <i class="material-icons">remove</i>
+          </button>
+
+          <div class="mdl-tooltip mdl-tooltip--large" for="btnRemove{{$index}}">
+            Remover
+          </div>
+          </td>
+        </tr>
+      </tbody>
+
+      <tfoot>
+        <tr>
+          <th>
+            Saldo anterior:
+          </th>
+
+          <td>
+            {{ ctrl.balance.previous | currency : $ : 2 }}
+          </td>
+
+          <th>
+            Saldo atual:
+          </th>
+          <td>
+            {{ ctrl.balance.current | currency : $ : 2 }}
+          </td>
+
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</section>
+</body>
+</html>
